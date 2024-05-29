@@ -3,6 +3,7 @@ package com.poklad.giphyjob.utlis
 object ApiConstants {
     const val BASE_URL = "https://api.giphy.com/v1/"
     const val API_KEY = "sXpBh6ZTRuMzG9QoKLhoOtuF1HSdGrEb"
+    const val TRENDING_GIFS = "gifs/trending"
 }
 
 object PresentationConstants {
