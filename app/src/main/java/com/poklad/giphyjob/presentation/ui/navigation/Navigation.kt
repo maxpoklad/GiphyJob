@@ -13,6 +13,7 @@ import com.poklad.giphyjob.R
 import com.poklad.giphyjob.presentation.ui.screens.MainViewModel
 import com.poklad.giphyjob.presentation.ui.screens.gif_details.DetailGifScreen
 import com.poklad.giphyjob.presentation.ui.screens.trending_gifs.TrendingGifsScreen
+import com.poklad.giphyjob.utlis.PresentationConstants
 
 @Composable
 fun Navigation(
@@ -33,10 +34,12 @@ fun Navigation(
             )
         }
         composable(
-            route = "${Screens.DETAIL_GIF.name}/{index}",
-            arguments = listOf(navArgument("index") { type = NavType.IntType })
+            route = "${Screens.DETAIL_GIF.name}/{${PresentationConstants.GIF_INDEX_KEY}}",
+            arguments = listOf(navArgument(PresentationConstants.GIF_INDEX_KEY) {
+                type = NavType.IntType
+            })
         ) { backStackEntry ->
-            val index = backStackEntry.arguments?.getInt("index") ?: 0
+            val index = backStackEntry.arguments?.getInt(PresentationConstants.GIF_INDEX_KEY) ?: 0
             val gifs = viewModel.getGifs()
             DetailGifScreen(
                 gifs = gifs,

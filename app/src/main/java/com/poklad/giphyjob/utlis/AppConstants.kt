@@ -6,7 +6,13 @@ object ApiConstants {
     const val TRENDING_GIFS = "gifs/trending"
 }
 
+object DatabaseConstants {
+    const val DATABASE_VERSION = 1
+    const val DB_NAME="gifs.db"
+}
+
 object PresentationConstants {
+    const val GIF_INDEX_KEY = "index"
     const val TEST_GIF_URL =
         "https://media2.giphy.com/media/Vh9bTZvA5zgIi2dcfx/giphy.gif?cid=cf63dba3a3fxsthpifhre5zo39ln1gm30z3mc1ijf68m7ire&ep=v1_gifs_trending&rid=giphy.gif&ct=g"
 }
