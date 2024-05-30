@@ -40,23 +40,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.poklad.giphyjob.R
 import com.poklad.giphyjob.presentation.model.GifPresentationModel
 import com.poklad.giphyjob.presentation.ui.components.AnimatedGif
+import com.poklad.giphyjob.presentation.ui.screens.MainViewModel
+import com.poklad.giphyjob.presentation.ui.screens.TrendingGifsState
 import com.poklad.giphyjob.utlis.PresentationConstants
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @Composable
 fun TrendingGifsScreen(
     modifier: Modifier = Modifier,
-    viewModel: TrendingGifsViewModel = hiltViewModel(),
-    onGifClick: (String) -> Unit
+    viewModel: MainViewModel = hiltViewModel(),
+    onGifClick: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val searchText by remember { mutableStateOf("") }
+
     Scaffold(
         modifier = modifier,
-        topBar = {
-            SearchBar(searchText = searchText)
-        }
+        topBar = { SearchBar(searchText = searchText) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -68,10 +67,7 @@ fun TrendingGifsScreen(
                 is TrendingGifsState.Loading -> CircularProgressIndicator()
                 is TrendingGifsState.Success -> TrendingGifTable(
                     gifs = (state as TrendingGifsState.Success).gifs,
-                    onGifClick = {
-                        val encodedUrl = URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
-                        onGifClick(encodedUrl)
-                    }
+                    onGifClick = { index -> onGifClick(index) }
                 )
 
                 is TrendingGifsState.Error -> Text(text = "Error: ${(state as TrendingGifsState.Error).throwable.localizedMessage}")
@@ -83,7 +79,7 @@ fun TrendingGifsScreen(
 @Composable
 private fun TrendingGifTable(
     gifs: List<GifPresentationModel>,
-    onGifClick: (String) -> Unit,
+    onGifClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -99,7 +95,7 @@ private fun TrendingGifTable(
                     .padding(dimensionResource(id = R.dimen.middle_padding))
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable { onGifClick(gif.url) }
+                    .clickable { onGifClick(gifs.indexOf(gif)) }
             )
         }
     }
@@ -157,7 +153,8 @@ private fun TrendingGifTablePreview() {
             username = "User $index"
         )
     }
-//    TrendingGifTable(gifs = list)
+    TrendingGifTable(
+        gifs = list, {})
 }
 
 @Preview(showBackground = true)

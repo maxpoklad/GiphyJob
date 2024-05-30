@@ -1,6 +1,5 @@
-package com.poklad.giphyjob.presentation.ui.screens.trending_gifs
+package com.poklad.giphyjob.presentation.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poklad.giphyjob.domain.usecases.GiphyUseCase
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TrendingGifsViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val useCase: GiphyUseCase,
     private val coroutineDispatcher: CoroutineDispatchersProvider
 ) : ViewModel() {
@@ -38,13 +37,16 @@ class TrendingGifsViewModel @Inject constructor(
             _state.value = TrendingGifsState.Loading
             try {
                 val gifs = useCase.getTrendingGifs()
-                Log.d("DDD", "$gifs")
                 _state.value = TrendingGifsState.Success(gifs = gifs)
             } catch (e: Exception) {
                 _state.value = TrendingGifsState.Error(e)
                 e.localizedMessage?.let { logError(it) }
             }
         }
+    }
+
+    fun getGifs(): List<GifPresentationModel> {
+        return (_state.value as? TrendingGifsState.Success)?.gifs.orEmpty()
     }
 }
 
