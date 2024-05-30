@@ -8,9 +8,28 @@ import retrofit2.http.Query
 interface GiphyApi {
     @GET(ApiConstants.TRENDING_GIFS)
     suspend fun getTrendingGifs(
-        @Query("limit") limit: Int = 50,
-        @Query("offset") offset: Int = 0,
-        @Query("rating") rating: String = "pg",
-        @Query("bundle") bundle: String = "messaging_non_clips"
+        @Query("limit") limit: Int = DEFAULT_LIMIT,
+        @Query("offset") offset: Int = DEFAULT_OFFSET,
+        @Query("rating") rating: String = DEFAULT_RATING,
+        @Query("bundle") bundle: String = DEFAULT_BUNDLE
     ): GiphyResponse?
+
+    @GET(ApiConstants.SEARCH_GIFS)
+    suspend fun searchGifs(
+        @Query("q") query: String,
+        @Query("limit") limit: Int = DEFAULT_LIMIT,
+        @Query("offset") offset: Int = DEFAULT_OFFSET,
+        @Query("rating") rating: String = DEFAULT_RATING,
+        @Query("lang") lang: String = DEFAULT_LANG,
+        @Query("bundle") bundle: String = DEFAULT_BUNDLE
+    ): GiphyResponse?
+
+    companion object {
+        const val DEFAULT_LIMIT = 50
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_RATING = "pg"
+        const val DEFAULT_LANG = "en"
+        const val DEFAULT_BUNDLE = "messaging_non_clips"
+    }
+
 }

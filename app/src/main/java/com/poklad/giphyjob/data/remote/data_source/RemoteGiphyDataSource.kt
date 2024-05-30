@@ -14,4 +14,13 @@ class RemoteGiphyDataSource @Inject constructor(
             it.convertToGifDataModel()
         }
     }
+
+    override suspend fun searchGifs(title: String): List<GifDataModel>? {
+        val response = api.searchGifs(query = title)
+        return response?.let {
+            it.data.map {gifData->
+                gifData.convertToGifDataModel()
+            }
+        }
+    }
 }

@@ -13,6 +13,10 @@ class CacheGifsDataSource @Inject constructor(
         return gifDao.getAllGifs()
     }
 
+    override suspend fun searchGifs(title: String): List<GifDataModel>? {
+        return gifDao.searchGifs(title)
+    }
+
     suspend fun saveGifs(gifs: List<GifDataModel>) {
         gifDao.clearGifs()
         gifDao.insertAll(gifs.map {

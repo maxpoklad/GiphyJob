@@ -16,4 +16,7 @@ interface GifDao {
 
     @Query("DELETE FROM gifentity")
     suspend fun clearGifs()
+
+    @Query("SELECT * FROM gifentity WHERE title LIKE '%' || :title || '%'")
+    suspend fun searchGifs(title: String): List<GifEntity>?
 }

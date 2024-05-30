@@ -5,10 +5,12 @@ import com.poklad.giphyjob.domain.repository.GiphyRepository
 import com.poklad.giphyjob.presentation.model.GifPresentationModel
 import javax.inject.Inject
 
-class GiphyUseCase @Inject constructor(
-    private val repository: GiphyRepository,
+class SearchGifUseCase @Inject constructor(
     private val mapper: GifDomainMapper,
+    private val repository: GiphyRepository
 ) {
-    suspend fun getTrendingGifs(): List<GifPresentationModel> =
-        repository.getTrendingGifs().filterNotNull().map { mapper.mapping(it) }
+    suspend fun searchGif(title: String): List<GifPresentationModel> {
+        val gifs = repository.searchRepository(title)
+        return gifs?.map { mapper.mapping(it) } ?: emptyList()
+    }
 }

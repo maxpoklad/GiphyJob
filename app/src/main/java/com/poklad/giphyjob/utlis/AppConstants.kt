@@ -4,11 +4,12 @@ object ApiConstants {
     const val BASE_URL = "https://api.giphy.com/v1/"
     const val API_KEY = "sXpBh6ZTRuMzG9QoKLhoOtuF1HSdGrEb"
     const val TRENDING_GIFS = "gifs/trending"
+    const val SEARCH_GIFS = "gifs/search"
 }
 
 object DatabaseConstants {
     const val DATABASE_VERSION = 1
-    const val DB_NAME="gifs.db"
+    const val DB_NAME = "gifs.db"
 }
 
 object PresentationConstants {

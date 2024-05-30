@@ -2,6 +2,7 @@ package com.poklad.giphyjob.presentation.ui.screens.trending_gifs
 
 import android.content.Context
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,13 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -51,23 +53,39 @@ fun TrendingGifsScreen(
     onGifClick: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val searchText by remember { mutableStateOf("") }
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
+    val touchOutsideModifier = Modifier.pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        })
+    }
     Scaffold(
         modifier = modifier,
-        topBar = { SearchBar(searchText = searchText) }
+        topBar = {
+            SearchBar(
+                searchText = searchQuery,
+                onSearchTextChanged = { viewModel.searchGifs(it) }
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .then(touchOutsideModifier),
             contentAlignment = Alignment.Center
         ) {
             when (state) {
                 is TrendingGifsState.Loading -> CircularProgressIndicator()
                 is TrendingGifsState.Success -> TrendingGifTable(
                     gifs = (state as TrendingGifsState.Success).gifs,
-                    onGifClick = { index -> onGifClick(index) }
+                    onGifClick = { index ->
+                        onGifClick(index)
+                    }
                 )
 
                 is TrendingGifsState.Error -> Text(text = "Error: ${(state as TrendingGifsState.Error).throwable.localizedMessage}")
@@ -125,7 +143,9 @@ private fun SearchBar(
     OutlinedTextField(
         value = searchText,
         maxLines = 1,
-        onValueChange = onSearchTextChanged,
+        onValueChange = {
+            onSearchTextChanged(it)
+        },
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,

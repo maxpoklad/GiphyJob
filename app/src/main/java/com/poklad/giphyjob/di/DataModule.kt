@@ -13,6 +13,7 @@ import com.poklad.giphyjob.data.repositories.DefaultGiphyRepository
 import com.poklad.giphyjob.domain.repository.GiphyRepository
 import com.poklad.giphyjob.utlis.ApiConstants
 import com.poklad.giphyjob.utlis.DatabaseConstants
+import com.poklad.giphyjob.utlis.connectivity.ConnectivityChecker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,22 +61,27 @@ class DataModule {
     @Singleton
     fun provideRemoteGiphyDataSource(api: GiphyApi): RemoteGiphyDataSource =
         RemoteGiphyDataSource(api)
+
     @Provides
     @Singleton
     fun provideCacheGifsDataSource(dao: GifDao): CacheGifsDataSource =
         CacheGifsDataSource(dao)
+
     @Provides
     @Singleton
     fun provideGifDao(database: AppDatabase): GifDao = database.getGifDao()
+
     @Provides
     @Singleton
     fun provideGiphyRepository(
         remoteGiphyDataSource: RemoteGiphyDataSource,
-        cacheGifsDataSource: CacheGifsDataSource
+        cacheGifsDataSource: CacheGifsDataSource,
+        connectivityChecker: ConnectivityChecker
     ): GiphyRepository =
         DefaultGiphyRepository(
             remoteGiphyDataSource = remoteGiphyDataSource,
-            cacheGifsDataSource = cacheGifsDataSource
+            cacheGifsDataSource = cacheGifsDataSource,
+            connectivityChecker = connectivityChecker
         )
 
     @Provides
