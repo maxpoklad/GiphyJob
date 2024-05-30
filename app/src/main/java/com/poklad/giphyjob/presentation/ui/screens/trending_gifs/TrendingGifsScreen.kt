@@ -1,6 +1,7 @@
 package com.poklad.giphyjob.presentation.ui.screens.trending_gifs
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -40,11 +41,14 @@ import com.poklad.giphyjob.R
 import com.poklad.giphyjob.presentation.model.GifPresentationModel
 import com.poklad.giphyjob.presentation.ui.components.AnimatedGif
 import com.poklad.giphyjob.utlis.PresentationConstants
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun TrendingGifsScreen(
     modifier: Modifier = Modifier,
     viewModel: TrendingGifsViewModel = hiltViewModel(),
+    onGifClick: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val searchText by remember { mutableStateOf("") }
@@ -62,7 +66,14 @@ fun TrendingGifsScreen(
         ) {
             when (state) {
                 is TrendingGifsState.Loading -> CircularProgressIndicator()
-                is TrendingGifsState.Success -> TrendingGifTable(gifs = (state as TrendingGifsState.Success).gifs)
+                is TrendingGifsState.Success -> TrendingGifTable(
+                    gifs = (state as TrendingGifsState.Success).gifs,
+                    onGifClick = {
+                        val encodedUrl = URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
+                        onGifClick(encodedUrl)
+                    }
+                )
+
                 is TrendingGifsState.Error -> Text(text = "Error: ${(state as TrendingGifsState.Error).throwable.localizedMessage}")
             }
         }
@@ -72,6 +83,7 @@ fun TrendingGifsScreen(
 @Composable
 private fun TrendingGifTable(
     gifs: List<GifPresentationModel>,
+    onGifClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -87,6 +99,7 @@ private fun TrendingGifTable(
                     .padding(dimensionResource(id = R.dimen.middle_padding))
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
+                    .clickable { onGifClick(gif.url) }
             )
         }
     }
@@ -144,7 +157,7 @@ private fun TrendingGifTablePreview() {
             username = "User $index"
         )
     }
-    TrendingGifTable(gifs = list)
+//    TrendingGifTable(gifs = list)
 }
 
 @Preview(showBackground = true)

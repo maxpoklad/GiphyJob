@@ -17,11 +17,13 @@ lifecycle-runtime-compose = "2.8.0"
 composeBom = "2024.05.00"
 coil = "2.6.0"
 coilGif = "2.2.0"
+nav_version = "2.7.7"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
