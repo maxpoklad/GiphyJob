@@ -97,7 +97,16 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler + coroutineDispatcher.ioDispatcher) {
             try {
                 deleteGifUseCase.deleteGif(id)
-                fetchTrendingGifs()
+                _state.update { currentState ->
+                    when (currentState) {
+                        is TrendingGifsState.Success -> {
+                            val updatedGifs = currentState.gifs.filterNot { it.id == id }
+                            TrendingGifsState.Success(updatedGifs)
+                        }
+
+                        else -> currentState
+                    }
+                }
             } catch (e: Exception) {
                 ensureActive()
                 _state.emit(TrendingGifsState.Error(e))

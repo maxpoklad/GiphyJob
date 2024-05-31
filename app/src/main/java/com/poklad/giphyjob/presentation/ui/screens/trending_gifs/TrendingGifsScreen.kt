@@ -2,6 +2,8 @@ package com.poklad.giphyjob.presentation.ui.screens.trending_gifs
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -105,6 +107,7 @@ fun TrendingGifsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TrendingGifTable(
     gifs: List<GifPresentationModel>,
@@ -128,6 +131,7 @@ private fun TrendingGifTable(
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable { onGifClick(gifs.indexOf(gif)) }
+                    .animateItemPlacement()
             )
         }
     }
@@ -146,6 +150,8 @@ private fun GifItem(
             .padding(dimensionResource(id = R.dimen.middle_padding))
             .aspectRatio(1f)
             .clip(RoundedCornerShape(8.dp))
+            .animateContentSize()
+
     ) {
         AnimatedGif(
             imageUrl = gifItem.url,

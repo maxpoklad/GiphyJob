@@ -26,7 +26,7 @@ interface GiphyApi {
 
     companion object {
         const val DEFAULT_LIMIT = 50
-        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_OFFSET = 50
         const val DEFAULT_RATING = "pg"
         const val DEFAULT_LANG = "en"
         const val DEFAULT_BUNDLE = "messaging_non_clips"
