@@ -10,15 +10,18 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -90,6 +93,9 @@ fun TrendingGifsScreen(
                     gifs = (state as TrendingGifsState.Success).gifs,
                     onGifClick = { index ->
                         onGifClick(index)
+                    },
+                    onGifDelete = {
+                        viewModel.deleteGif(it)
                     }
                 )
 
@@ -103,6 +109,7 @@ fun TrendingGifsScreen(
 private fun TrendingGifTable(
     gifs: List<GifPresentationModel>,
     columns: Int,
+    onGifDelete: (String) -> Unit,
     onGifClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,6 +122,7 @@ private fun TrendingGifTable(
             GifItem(
                 context = LocalContext.current,
                 gifItem = gif,
+                onGifDelete = onGifDelete,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.middle_padding))
                     .aspectRatio(1f)
@@ -129,15 +137,38 @@ private fun TrendingGifTable(
 private fun GifItem(
     context: Context,
     modifier: Modifier = Modifier,
+    onGifDelete: (String) -> Unit,
     gifItem: GifPresentationModel
 ) {
-    AnimatedGif(
-        imageUrl = gifItem.url,
-        context = context,
-        contentDescription = gifItem.title,
-        modifier = modifier,
-        contentScale = ContentScale.Crop
-    )
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.middle_padding))
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(8.dp))
+    ) {
+        AnimatedGif(
+            imageUrl = gifItem.url,
+            context = context,
+            contentDescription = gifItem.title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        IconButton(
+            onClick = { onGifDelete(gifItem.id) },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(4.dp)
+                .size(24.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(id = R.string.delete),
+                tint = MaterialTheme.colorScheme.error
+            )
+        }
+    }
 }
 
 @Composable
@@ -180,7 +211,7 @@ private fun TrendingGifTablePreview() {
         )
     }
     TrendingGifTable(
-        gifs = list, onGifClick = {}, columns = 2
+        gifs = list, onGifClick = {}, columns = 2, onGifDelete = {}
     )
 }
 

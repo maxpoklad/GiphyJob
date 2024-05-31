@@ -8,7 +8,7 @@ object ApiConstants {
 }
 
 object DatabaseConstants {
-    const val DATABASE_VERSION = 1
+    const val DATABASE_VERSION = 2
     const val DB_NAME = "gifs.db"
 }
 

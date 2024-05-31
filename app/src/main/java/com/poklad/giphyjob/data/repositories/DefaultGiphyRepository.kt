@@ -23,7 +23,9 @@ class DefaultGiphyRepository @Inject constructor(
                         cacheGifsDataSource.saveGifs(gifs)
                     }
                 }
-                gifs ?: cacheGifsDataSource.getTrendingGifs()
+                gifs?.filterNot {
+                    cacheGifsDataSource.getDeletedGifs().contains(it.id)
+                } ?: cacheGifsDataSource.getTrendingGifs()
             } catch (e: Exception) {
                 cacheGifsDataSource.getTrendingGifs()
             }
@@ -35,12 +37,18 @@ class DefaultGiphyRepository @Inject constructor(
     override suspend fun searchRepository(title: String): List<GifDataModel>? {
         return if (connectivityChecker.isConnected()) {
             try {
-                remoteGiphyDataSource.searchGifs(title) ?: cacheGifsDataSource.searchGifs(title)
+                remoteGiphyDataSource.searchGifs(title)?.filterNot {
+                    cacheGifsDataSource.getDeletedGifs().contains(it.id)
+                } ?: cacheGifsDataSource.searchGifs(title)
             } catch (e: Exception) {
                 cacheGifsDataSource.searchGifs(title)
             }
         } else {
             cacheGifsDataSource.searchGifs(title)
         }
+    }
+
+    override suspend fun deleteGif(id: String) {
+        cacheGifsDataSource.deleteGif(id)
     }
 }

@@ -2,6 +2,7 @@ package com.poklad.giphyjob.presentation.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poklad.giphyjob.domain.usecases.DeleteGifUseCase
 import com.poklad.giphyjob.domain.usecases.GetGifsUseCase
 import com.poklad.giphyjob.domain.usecases.SearchGifUseCase
 import com.poklad.giphyjob.presentation.model.GifPresentationModel
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getGifsUseCase: GetGifsUseCase,
     private val searchGifUseCase: SearchGifUseCase,
+    private val deleteGifUseCase: DeleteGifUseCase,
     private val coroutineDispatcher: CoroutineDispatchersProvider
 ) : ViewModel() {
     private val _state = MutableStateFlow<TrendingGifsState>(TrendingGifsState.Loading)
@@ -86,6 +88,19 @@ class MainViewModel @Inject constructor(
                 _state.value = TrendingGifsState.Success(gifs)
             } catch (e: Exception) {
                 _state.value = TrendingGifsState.Error(e)
+                e.localizedMessage?.let { logError(it) }
+            }
+        }
+    }
+
+    fun deleteGif(id: String) {
+        viewModelScope.launch(coroutineExceptionHandler + coroutineDispatcher.ioDispatcher) {
+            try {
+                deleteGifUseCase.deleteGif(id)
+                fetchTrendingGifs()
+            } catch (e: Exception) {
+                ensureActive()
+                _state.emit(TrendingGifsState.Error(e))
                 e.localizedMessage?.let { logError(it) }
             }
         }

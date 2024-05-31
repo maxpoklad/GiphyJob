@@ -2,6 +2,7 @@ package com.poklad.giphyjob.di
 
 import android.content.Context
 import androidx.room.Room
+import com.poklad.giphyjob.data.local.dao.DeletedGifDao
 import com.poklad.giphyjob.data.local.dao.GifDao
 import com.poklad.giphyjob.data.local.data_source.CacheGifsDataSource
 import com.poklad.giphyjob.data.local.database.AppDatabase
@@ -64,12 +65,16 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideCacheGifsDataSource(dao: GifDao): CacheGifsDataSource =
-        CacheGifsDataSource(dao)
+    fun provideCacheGifsDataSource(dao: GifDao, deletedGifDao: DeletedGifDao): CacheGifsDataSource =
+        CacheGifsDataSource(dao, deletedGifDao)
 
     @Provides
     @Singleton
     fun provideGifDao(database: AppDatabase): GifDao = database.getGifDao()
+
+    @Provides
+    @Singleton
+    fun provideDeletedGifDao(database: AppDatabase): DeletedGifDao = database.getDeletedGifDao()
 
     @Provides
     @Singleton

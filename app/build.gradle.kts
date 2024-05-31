@@ -82,6 +82,9 @@ dependencies {
     kapt(libs.room.compiler)
     implementation(libs.room.paging)
 
+    // Paging Compose
+    implementation(libs.androidx.paging.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
