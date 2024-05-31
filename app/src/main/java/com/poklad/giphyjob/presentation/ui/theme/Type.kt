@@ -1,4 +1,4 @@
-package com.poklad.giphyjob.ui.theme
+package com.poklad.giphyjob.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

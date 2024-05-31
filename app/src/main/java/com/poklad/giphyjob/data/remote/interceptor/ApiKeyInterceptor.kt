@@ -1,4 +1,4 @@
-package com.poklad.giphyjob.data.remote.interceptop;
+package com.poklad.giphyjob.data.remote.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response

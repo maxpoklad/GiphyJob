@@ -1,4 +1,4 @@
-package com.poklad.giphyjob.ui.theme
+package com.poklad.giphyjob.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

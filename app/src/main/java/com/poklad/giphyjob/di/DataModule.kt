@@ -9,7 +9,7 @@ import com.poklad.giphyjob.data.local.database.AppDatabase
 import com.poklad.giphyjob.data.local.database.DefaultGifDatabase
 import com.poklad.giphyjob.data.remote.GiphyApi
 import com.poklad.giphyjob.data.remote.data_source.RemoteGiphyDataSource
-import com.poklad.giphyjob.data.remote.interceptop.ApiKeyInterceptor
+import com.poklad.giphyjob.data.remote.interceptor.ApiKeyInterceptor
 import com.poklad.giphyjob.data.repositories.DefaultGiphyRepository
 import com.poklad.giphyjob.domain.repository.GiphyRepository
 import com.poklad.giphyjob.utlis.ApiConstants

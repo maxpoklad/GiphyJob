@@ -159,8 +159,8 @@ private fun GifItem(
             onClick = { onGifDelete(gifItem.id) },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(4.dp)
-                .size(24.dp)
+                .padding(dimensionResource(id = R.dimen.middle_padding))
+                .size(dimensionResource(id = R.dimen.icon_size)),
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
