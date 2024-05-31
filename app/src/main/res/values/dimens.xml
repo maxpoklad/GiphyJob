@@ -2,4 +2,5 @@
 <resources>
     <dimen name="middle_padding">8dp</dimen>
     <dimen name="small_padding">4dp</dimen>
+    <dimen name="big_padding">16dp</dimen>
 </resources>

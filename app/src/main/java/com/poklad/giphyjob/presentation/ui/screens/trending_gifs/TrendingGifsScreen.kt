@@ -1,6 +1,7 @@
 package com.poklad.giphyjob.presentation.ui.screens.trending_gifs
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -63,6 +65,8 @@ fun TrendingGifsScreen(
             focusManager.clearFocus()
         })
     }
+    val orientation = LocalConfiguration.current.orientation
+    val columns = if (orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -82,6 +86,7 @@ fun TrendingGifsScreen(
             when (state) {
                 is TrendingGifsState.Loading -> CircularProgressIndicator()
                 is TrendingGifsState.Success -> TrendingGifTable(
+                    columns = columns,
                     gifs = (state as TrendingGifsState.Success).gifs,
                     onGifClick = { index ->
                         onGifClick(index)
@@ -97,11 +102,12 @@ fun TrendingGifsScreen(
 @Composable
 private fun TrendingGifTable(
     gifs: List<GifPresentationModel>,
+    columns: Int,
     onGifClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(columns),
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.middle_padding)),
         modifier = modifier
     ) {
@@ -174,7 +180,8 @@ private fun TrendingGifTablePreview() {
         )
     }
     TrendingGifTable(
-        gifs = list, {})
+        gifs = list, onGifClick = {}, columns = 2
+    )
 }
 
 @Preview(showBackground = true)

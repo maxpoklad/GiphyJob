@@ -4,4 +4,6 @@
     <string name="tranding">Tranding</string>
     <string name="details">Details</string>
     <string name="back_button">back</string>
+    <string name="empty_string" />
+    <string name="author_format">Author: %1$s</string>
 </resources>
