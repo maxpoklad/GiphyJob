@@ -40,14 +40,13 @@ fun Navigation(
             })
         ) { backStackEntry ->
             val index = backStackEntry.arguments?.getInt(PresentationConstants.GIF_INDEX_KEY) ?: 0
-            val gifs = viewModel.getGifs()
             DetailGifScreen(
-                gifs = gifs,
                 startIndex = index,
                 navigateUp = { navController.navigateUp() })
         }
     }
 }
+
 
 private enum class Screens(@StringRes val title: Int) {
     TRENDING_GIFS(title = R.string.tranding),

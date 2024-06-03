@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.poklad.giphyjob.data.local.dao.DeletedGifDao
 import com.poklad.giphyjob.data.local.dao.GifDao
+import com.poklad.giphyjob.data.local.dao.GifLiveData
 import com.poklad.giphyjob.data.local.models.DeletedGifEntity
 import com.poklad.giphyjob.data.local.models.GifEntity
 import com.poklad.giphyjob.utlis.DatabaseConstants
@@ -16,4 +17,6 @@ import com.poklad.giphyjob.utlis.DatabaseConstants
 abstract class DefaultGifDatabase : RoomDatabase(), AppDatabase {
     abstract override fun getGifDao(): GifDao
     abstract override fun getDeletedGifDao(): DeletedGifDao
+    abstract override fun getLiveDataGifDao(): GifLiveData
+
 }

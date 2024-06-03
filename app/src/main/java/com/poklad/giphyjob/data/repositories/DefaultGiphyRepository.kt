@@ -2,9 +2,11 @@ package com.poklad.giphyjob.data.repositories
 
 import com.poklad.giphyjob.data.common.models.GifDataModel
 import com.poklad.giphyjob.data.local.data_source.CacheGifsDataSource
+import com.poklad.giphyjob.data.local.models.GifEntity
 import com.poklad.giphyjob.data.remote.data_source.RemoteGiphyDataSource
 import com.poklad.giphyjob.domain.repository.GiphyRepository
 import com.poklad.giphyjob.utlis.connectivity.ConnectivityChecker
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DefaultGiphyRepository @Inject constructor(
@@ -13,14 +15,22 @@ class DefaultGiphyRepository @Inject constructor(
     private val connectivityChecker: ConnectivityChecker
 ) : GiphyRepository {
 
-    override suspend fun getTrendingGifs(): List<GifDataModel> {
+    override suspend fun getAllGify(): List<GifDataModel> =
+        cacheGifsDataSource.getTrendingGifs()
+    override fun getGifBy(id: String): Flow<GifEntity> =
+        cacheGifsDataSource.getGifBy(id)
+
+    override fun getLiveDataGify(): Flow<List<GifEntity>> =
+        cacheGifsDataSource.getLiveDataGify()
+
+    override suspend fun getTrendingGifs(withOffset: Int): List<GifDataModel> {
         return if (connectivityChecker.isConnected()) {
             try {
                 val gifs =
-                    remoteGiphyDataSource.getTrendingGifs()
+                    remoteGiphyDataSource.getTrendingGifs(withOffset)
                 if (gifs != null) {
                     if (gifs.isNotEmpty()) {
-                        cacheGifsDataSource.saveGifs(gifs)
+                        cacheGifsDataSource.saveGifs(gifs, withOffset > 0)
                     }
                 }
                 gifs?.filterNot {

@@ -2,6 +2,8 @@ package com.poklad.giphyjob.presentation.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poklad.giphyjob.data.local.models.GifEntity
+import com.poklad.giphyjob.data.remote.GiphyApi
 import com.poklad.giphyjob.domain.usecases.DeleteGifUseCase
 import com.poklad.giphyjob.domain.usecases.GetGifsUseCase
 import com.poklad.giphyjob.domain.usecases.SearchGifUseCase
@@ -12,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,17 +43,21 @@ class MainViewModel @Inject constructor(
             _state.update { TrendingGifsState.Error(throwable) }
             logError(throwable.message.toString())
         }
+    val gifFlow: Flow<List<GifEntity>>
+        get() {
+            return getGifsUseCase.getLiveData()
+        }
 
     init {
         fetchTrendingGifs()
         observeSearchQuery()
     }
 
-    private fun fetchTrendingGifs() {
+    private fun fetchTrendingGifs(withOffset: Int = GiphyApi.DEFAULT_OFFSET) {
         viewModelScope.launch(coroutineExceptionHandler + coroutineDispatcher.ioDispatcher) {
             _state.emit(TrendingGifsState.Loading)
             try {
-                val gifs = getGifsUseCase.getTrendingGifs()
+                val gifs = getGifsUseCase.getTrendingGifs(withOffset)
                 ensureActive()
                 _state.emit(TrendingGifsState.Success(gifs))
             } catch (e: Exception) {
@@ -63,6 +70,11 @@ class MainViewModel @Inject constructor(
     fun searchGifs(title: String) {
         _searchQuery.value = title
     }
+
+    fun requestNextPage(offset: Int) {
+        fetchTrendingGifs(offset)
+    }
+
 
     @OptIn(FlowPreview::class)
     private fun observeSearchQuery() {
@@ -96,7 +108,7 @@ class MainViewModel @Inject constructor(
     fun deleteGif(id: String) {
         viewModelScope.launch(coroutineExceptionHandler + coroutineDispatcher.ioDispatcher) {
             try {
-                deleteGifUseCase.deleteGif(id)
+                deleteGifUseCase(id)
                 _state.update { currentState ->
                     when (currentState) {
                         is TrendingGifsState.Success -> {

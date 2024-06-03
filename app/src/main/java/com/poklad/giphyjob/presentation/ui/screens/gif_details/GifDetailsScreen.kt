@@ -35,6 +35,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.poklad.giphyjob.R
 import com.poklad.giphyjob.presentation.model.GifPresentationModel
 import com.poklad.giphyjob.presentation.ui.components.AnimatedGif
@@ -43,11 +44,12 @@ import com.poklad.giphyjob.utlis.PresentationConstants
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailGifScreen(
-    gifs: List<GifPresentationModel>,
     startIndex: Int,
     modifier: Modifier = Modifier,
+    viewModel: DetailGifViewModel = hiltViewModel(),
     navigateUp: () -> Unit = {}
 ) {
+    val gifs = viewModel.gifFlow
     val pagerState = rememberPagerState(initialPage = startIndex) {
         gifs.size
     }
@@ -132,6 +134,7 @@ private fun LandscapePager(
         )
     }
 }
+
 @Composable
 fun DetailedGifLandscape(
     context: Context,
@@ -160,7 +163,7 @@ fun DetailedGifLandscape(
                 style = MaterialTheme.typography.titleLarge,
                 fontFamily = FontFamily.Serif
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id =R.dimen.big_padding)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.big_padding)))
             Text(
                 text = stringResource(id = R.string.author_format, gifItem.username),
                 style = MaterialTheme.typography.bodySmall,

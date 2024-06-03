@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -72,6 +73,12 @@ fun TrendingGifsScreen(
     }
     val orientation = LocalConfiguration.current.orientation
     val columns = if (orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+
+    val gifsFlow by viewModel.gifFlow.collectAsState(initial = emptyList())
+    LaunchedEffect(key1 = true) {
+        viewModel.requestNextPage(0)
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -88,21 +95,24 @@ fun TrendingGifsScreen(
                 .then(touchOutsideModifier),
             contentAlignment = Alignment.Center
         ) {
-            when (state) {
-                is TrendingGifsState.Loading -> CircularProgressIndicator()
-                is TrendingGifsState.Success -> TrendingGifTable(
-                    columns = columns,
-                    gifs = (state as TrendingGifsState.Success).gifs,
-                    onGifClick = { index ->
-                        onGifClick(index)
-                    },
-                    onGifDelete = {
-                        viewModel.deleteGif(it)
-                    }
-                )
+            TrendingGifTable(
+                gifs = gifsFlow.map { GifPresentationModel(it.id, it.url, it.title, it.username) },
+                columns = columns,
+                onGifDelete = {
+                    viewModel.deleteGif(it)
+                },
+                onGifClick = { index ->
+                    onGifClick(index)
+                },
+                requestNextPage = {
+                    viewModel.requestNextPage(gifsFlow.size)
+                }
+            )
 
-                is TrendingGifsState.Error -> Text(text = "Error: ${(state as TrendingGifsState.Error).throwable.localizedMessage}")
-            }
+            if (state is TrendingGifsState.Loading)
+                CircularProgressIndicator()
+            if (state is TrendingGifsState.Error)
+                Text(text = "Error: ${(state as TrendingGifsState.Error).throwable.localizedMessage}")
         }
     }
 }
@@ -114,14 +124,16 @@ private fun TrendingGifTable(
     columns: Int,
     onGifDelete: (String) -> Unit,
     onGifClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    requestNextPage: (() -> Unit)? = null
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.middle_padding)),
         modifier = modifier
     ) {
-        items(gifs, key = { it.id }) { gif ->
+        itemsIndexed(items = gifs,
+            key = { _, item -> item.id }) { index, gif ->
             GifItem(
                 context = LocalContext.current,
                 gifItem = gif,
@@ -130,13 +142,15 @@ private fun TrendingGifTable(
                     .padding(dimensionResource(id = R.dimen.middle_padding))
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable { onGifClick(gifs.indexOf(gif)) }
+                    .clickable { onGifClick(index) }
                     .animateItemPlacement()
             )
+            if (index > (gifs.size - columns * 2)) {
+                requestNextPage?.invoke()
+            }
         }
     }
 }
-
 @Composable
 private fun GifItem(
     context: Context,

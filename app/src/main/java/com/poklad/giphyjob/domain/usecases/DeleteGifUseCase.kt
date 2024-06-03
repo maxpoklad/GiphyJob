@@ -6,7 +6,7 @@ import javax.inject.Inject
 class DeleteGifUseCase @Inject constructor(
     private val repository: GiphyRepository,
 ) {
-    suspend fun deleteGif(id: String) {
+    suspend operator fun invoke(id: String) {
         repository.deleteGif(id)
     }
 }
